@@ -1,0 +1,29 @@
+.photoviewcontainer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  right: 0;
+  bottom: 0;
+  background: black;
+}
+.photoviewframe {
+  position: absolute;
+  background: transparent;
+}
+.photoviewframe img {
+  width: 100%;
+  height: auto;
+  animation-name: shuttereffect;
+  animation-duration: 0.5s;
+}
+.backbutton {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+}
+@keyframes shuttereffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}

@@ -1,0 +1,14 @@
+.centerbutton {
+  position: absolute;
+  bottom: 10%;
+  -webkit-transform: translate(-50%);
+  transform: translate(-50%);
+  left: 50%;
+  font-size: 40px;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+  background-color: rgba(80,80,80,0.5);
+  border-radius: 5px;
+}
+

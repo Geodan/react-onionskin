@@ -1,0 +1,9 @@
+.iconbutton {
+  color: white;
+  cursor: pointer;
+  padding: 2px;
+  background-color: rgba(80,80,80,0.5);
+  border-radius: 2px;
+  font-size: 20px !important;
+}
+

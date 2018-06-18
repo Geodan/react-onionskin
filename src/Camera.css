@@ -1,0 +1,53 @@
+.cameracontainer, .photocontainer {
+  position: absolute;
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  user-select: none;
+  border: 2px solid black;
+}
+
+.cameracontainer {
+  /* background of camrera-preview is required to be transparent */
+  background: transparent;
+}
+
+.camera_frame {
+  position: absolute;
+  transition: all 0.1s ease;
+}
+
+.camera_bar {
+  position: absolute;
+  background: black;
+}
+
+.video {
+  width: 100%;
+  height: auto;
+}
+
+.canvas {
+  position: absolute;
+  left: -640px;
+  width: 640px;
+  height: 480px;
+}
+
+.closebutton {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.opacitybutton {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+}
