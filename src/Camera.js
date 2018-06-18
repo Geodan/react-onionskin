@@ -83,7 +83,6 @@ class Camera extends Component {
     if (this.state.hascamera) {
       this.setMediaStream();
     }
-    console.log(JSON.stringify(faClose));
   }
   compontentWillUnmount()
   {
@@ -155,19 +154,36 @@ class Camera extends Component {
     // turn off video
     const self = this;
     setTimeout(function() {
-      let stream = self.videoRef.current.srcObject;
-      let tracks = stream.getTracks();
-      tracks.forEach(track=>track.stop());
-      self.videoRef.current.srcObject = null;
-    }, 1000);
+      if (self.videoRef.current) {
+        let stream = self.videoRef.current.srcObject;
+        let tracks = stream.getTracks();
+        tracks.forEach(track=>track.stop());
+        self.videoRef.current.srcObject = null;
+      }
+    }, 500);
     console.log("picture taken!", this.photoData.length);
   }
   photoAccepted()
   {
-    this.props.photo(this.photoData);
+    this.setState(Object.assign(this.state, {photoVisible: false}));
+    this.props.getphoto(this.photoData);
+  }
+  cameraCancelled()
+  {
+    // user clicked close
+    if (this.videoRef.current) {
+      let stream = this.videoRef.current.srcObject;
+      let tracks = stream.getTracks();
+      tracks.forEach(track=>track.stop());
+      this.videoRef.current.srcObject = null;
+    }
+    this.setState(Object.assign(this.state, {photoVisible: false}));
+    this.photoData = null;
+    this.props.getphoto(null);
   }
   photoCancelled()
   {
+    // user cancelled photo (using back button on photo)
     this.setState(Object.assign(this.state, {photoVisible: false}));
     this.photoData = null;
   }
@@ -187,7 +203,7 @@ class Camera extends Component {
           </div>
           <canvas className="canvas" width={this.state.videoWidth} height={this.state.videoHeight} ref={this.canvasRef}/>
           <div className="camera_bar" ref={this.afterRef}></div>
-          <IconButton icon={faClose} className="closebutton" onClick={this.photoCancelled.bind(this)} />          
+          <IconButton icon={faClose} className="closebutton" onClick={this.cameraCancelled.bind(this)} />          
           <PhotoView rect={this.state.camRect} visible={this.state.photoVisible} photodata={this.photoData} onaccept={this.photoAccepted.bind(this)} oncancel={this.photoCancelled.bind(this)}/>
           <OverlayView rect={this.state.camRect} src={this.props.overlayURL} opacity={this.opacity} />
           <IconButton icon={faOpacity} className="opacitybutton" onClick={this.photoCancelled.bind(this)} />
