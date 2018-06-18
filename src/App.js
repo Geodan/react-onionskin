@@ -19,7 +19,6 @@ class App extends Component {
   photoResult(photoData)
   {
     this.setState(Object.assign(this.state, photoData ? {photo: photoData, camVisible: false} : {camVisible: false}));
-    console.log("hiero!")
   }
   render() {
     if (this.state.camVisible) {
