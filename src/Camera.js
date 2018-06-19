@@ -162,14 +162,21 @@ class Camera extends Component {
     this.photoData = this.canvasRef.current.toDataURL('image/jpeg');
     // turn off video
     this.closeMediaStream();
-    this.setState(Object.assign(this.state, {photoVisible: true}));
+    this.prevOverlayOpacity = this.state.overlayOpacity;
+    this.setState(Object.assign(this.state, {photoVisible: true, overlayOpacity: 0}));
     console.log("picture taken!", this.photoData.length);
   }
   photoAccepted()
   {
     this.closeMediaStream();
-    this.setState(Object.assign(this.state, {photoVisible: false}));
+    this.setState(Object.assign(this.state, {photoVisible: false, overlayOpacity: this.prevOverlayOpacity}));
     this.props.getphoto(this.photoData);
+  }
+  photoCancelled()
+  {
+    // user cancelled photo (using back button on photo)
+    this.setState(Object.assign(this.state, {photoVisible: false, overlayOpacity: this.prevOverlayOpacity}));
+    this.photoData = null;
   }
   closeMediaStream()
   {
@@ -190,12 +197,6 @@ class Camera extends Component {
     this.setState(Object.assign(this.state, {photoVisible: false}));
     this.photoData = null;
     this.props.getphoto(null);
-  }
-  photoCancelled()
-  {
-    // user cancelled photo (using back button on photo)
-    this.setState(Object.assign(this.state, {photoVisible: false}));
-    this.photoData = null;
   }
   opacityUp() 
   { 
@@ -245,21 +246,20 @@ class Camera extends Component {
           <IconButton className="centerbutton" onClick={this.photoAccepted.bind(this)} icon={faCheckSquare} visible={this.state.photoVisible}/>
           <IconButton icon={faClose} className="closebutton" onClick={this.cameraCancelled.bind(this)} visible={!this.state.photoVisible}/>
           <IconButton onClick={this.photoCancelled.bind(this)} className="backbutton" icon={faArrowLeft} visible={this.state.photoVisible}/>
-          <div class="opacitybar">
+          {this.props.overlayURL && <div className="opacitybar">
           <IconButton icon={faMinus} className="opacitybutton" onClick={this.opacityDown.bind(this)} />
           &nbsp;
-          <FontAwesomeIcon icon={faOpacity} class="opacityicon"/>
+          <FontAwesomeIcon icon={faOpacity} className="opacityicon"/>
           &nbsp;
           <IconButton icon={faPlus} className="opacitybutton" onClick={this.opacityUp.bind(this)} />
           <div id="opacityinfo" className={"opacityinfo a" + Math.round(this.state.overlayOpacity*100)}>{Math.round(this.state.overlayOpacity * 100) + "%"}</div>
-          </div>
+          </div>}
         </div>
       );
-    } else {
-      return (
-        <div id={this.props.id}>No camera available</div>
-      );
     }
+    return (
+        <div id={this.props.id}>No camera available</div>
+    );
   }
 }
 

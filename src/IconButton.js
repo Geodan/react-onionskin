@@ -10,9 +10,8 @@ class IconButton extends Component {
           <FontAwesomeIcon icon={this.props.icon} />
         </span>
       );
-    } else {
-      return null;
     }
+    return null;
   }
 }
 

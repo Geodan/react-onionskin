@@ -4,7 +4,7 @@ import './OverlayView.css';
 class OverlayView extends Component {
   render() {
     let myStyle = this.props.style ? Object.assign({}, this.props.style) : {};
-    if (this.props.opacity) {
+    if (this.props.opacity !== undefined) {
       myStyle = Object.assign(myStyle, {opacity: this.props.opacity});
     }
     if ((this.props.visible === undefined || this.props.visible) && this.props.src) {
