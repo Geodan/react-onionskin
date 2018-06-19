@@ -74,10 +74,10 @@ class Camera extends Component {
     this.videoRef = React.createRef();
     this.canvasRef = React.createRef();
     this.state = {
-      id: props.id,
-      camnumber: props.camnumber,
-      overlay: props.overlay,
-      hascamera: true
+      hascamera: true,
+      camRect: null,
+      videoWidth: undefined,
+      videoHeight: undefined
     }
   }
   componentDidMount()
@@ -114,9 +114,7 @@ class Camera extends Component {
   {
     console.log("componentDidUpate");
     this.updateDimensions();
-    if (this.state.hascamera) {
-      this.setMediaStream();
-    }
+    this.setMediaStream();
   }
   setMediaStream()
   {
@@ -126,6 +124,9 @@ class Camera extends Component {
     }
     if (this.videoRef.current.srcObject) {
       return; // already set
+    }
+    if (!this.state.hascamera) {
+      return; // no camera devices available
     }
     const self = this;
     navigator.mediaDevices.enumerateDevices()
@@ -138,19 +139,14 @@ class Camera extends Component {
           self.videoRef.current.srcObject = stream;
           self.videoRef.current.onloadedmetadata = function() {
             if (this.videoWidth !== self.state.videoWidth || this.videoHeight !== self.state.videoHeight) {
-              let tmp = Object.assign({}, self.state);
-              tmp.videoWidth = this.videoWidth;
-              tmp.videoHeight = this.videoHeight;
-              self.setState(tmp);
+              self.setState(Object.assign(self.state, {videoWidth: this.videoWidth, videoHeight: this.videoHeight}));
             }
           }
         }).catch(function(error) {
           console.log(error);
         });
       } else {
-        let tmp = Object.assign({}, self.state);
-        tmp.hascamera = false;
-        self.setState(tmp);
+        self.setState(Object.assign(self.state, {hascamera: false}));
       }
     })
   }
@@ -208,7 +204,7 @@ class Camera extends Component {
         <div className="cameracontainer">
           <div className="camera_bar" ref={this.beforeRef}></div>
           <div className="camera_frame" ref={this.camFrameRef}>
-          <video autoPlay className="video" id={this.state.id} ref={this.videoRef}></video>
+          <video autoPlay className="video" id={this.props.id} ref={this.videoRef}></video>
           <CenterButton onClick={()=> this.takePhoto()} icon={faCamera}/>          
           </div>
           <canvas className="canvas" width={this.state.videoWidth} height={this.state.videoHeight} ref={this.canvasRef}/>
@@ -221,7 +217,7 @@ class Camera extends Component {
       );
     } else {
       return (
-        <div id={this.state.id}>No camera available</div>
+        <div id={this.props.id}>No camera available</div>
       );
     }
   }
