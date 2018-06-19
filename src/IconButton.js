@@ -6,9 +6,9 @@ class IconButton extends Component {
   render() {
     if (this.props.visible === undefined || this.props.visible) {
       return (
-        <div className={"iconbutton " + this.props.className} onClick={this.props.onClick}>
+        <span className={"iconbutton " + this.props.className} onClick={this.props.onClick}>
           <FontAwesomeIcon icon={this.props.icon} />
-        </div>
+        </span>
       );
     } else {
       return null;

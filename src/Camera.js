@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import './Camera.css';
 import IconButton from './IconButton';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faCamera from '@fortawesome/fontawesome-free-solid/faCamera';
 import faClose from '@fortawesome/fontawesome-free-solid/faTimes';
+import faPlus from '@fortawesome/fontawesome-free-solid/faPlus';
+import faMinus from '@fortawesome/fontawesome-free-solid/faMinus';
 import faOpacity from './iconOpacity.json';
 import OverlayView from './OverlayView';
 import faCheckSquare from '@fortawesome/fontawesome-free-solid/faCheckSquare';
@@ -194,6 +197,24 @@ class Camera extends Component {
     this.setState(Object.assign(this.state, {photoVisible: false}));
     this.photoData = null;
   }
+  opacityUp() 
+  { 
+    if (Math.round(this.state.overlayOpacity * 100) < 100) {
+      this.setState(Object.assign(this.state, {overlayOpacity: this.state.overlayOpacity + 0.1}));
+      setTimeout(function(){
+        document.getElementById("opacityinfo").classList.add("opacityanimation");
+      }, 100);
+    }
+  }
+  opacityDown()
+  {
+    if (Math.round(this.state.overlayOpacity * 100) > 0) {
+      this.setState(Object.assign(this.state, {overlayOpacity: this.state.overlayOpacity - 0.1}));
+      setTimeout(function(){
+        document.getElementById("opacityinfo").classList.add("opacityanimation");
+      }, 100);
+    }
+  }
   render() {
     // The camera container fully occupies the window / screen.
     // For tech-reasons, everything under the camera preview has to be transparent
@@ -218,13 +239,20 @@ class Camera extends Component {
           </div>
           <canvas className="canvas" width={this.state.videoWidth} height={this.state.videoHeight} ref={this.canvasRef}/>
           <div className="camera_bar" ref={this.afterRef}></div>
-          <OverlayView style={camRectStyle} visible={this.state.photoVisible} src={this.photoData}/>
+          <OverlayView className="photoview" style={camRectStyle} visible={this.state.photoVisible} src={this.photoData}/>
           <OverlayView style={camRectStyle} src={this.props.overlayURL} opacity={this.state.overlayOpacity} />
           <IconButton className="centerbutton" onClick={this.takePhoto.bind(this)} icon={faCamera} visible={!this.state.photoVisible}/>
           <IconButton className="centerbutton" onClick={this.photoAccepted.bind(this)} icon={faCheckSquare} visible={this.state.photoVisible}/>
           <IconButton icon={faClose} className="closebutton" onClick={this.cameraCancelled.bind(this)} visible={!this.state.photoVisible}/>
           <IconButton onClick={this.photoCancelled.bind(this)} className="backbutton" icon={faArrowLeft} visible={this.state.photoVisible}/>
-          <IconButton icon={faOpacity} className="opacitybutton" onClick={this.photoCancelled.bind(this)} />
+          <div class="opacitybar">
+          <IconButton icon={faMinus} className="opacitybutton" onClick={this.opacityDown.bind(this)} />
+          &nbsp;
+          <FontAwesomeIcon icon={faOpacity} class="opacityicon"/>
+          &nbsp;
+          <IconButton icon={faPlus} className="opacitybutton" onClick={this.opacityUp.bind(this)} />
+          <div id="opacityinfo" className={"opacityinfo a" + Math.round(this.state.overlayOpacity*100)}>{Math.round(this.state.overlayOpacity * 100) + "%"}</div>
+          </div>
         </div>
       );
     } else {
