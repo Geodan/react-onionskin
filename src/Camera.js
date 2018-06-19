@@ -75,7 +75,7 @@ class Camera extends Component {
     this.canvasRef = React.createRef();
     this.state = {
       hascamera: true,
-      camRect: null,
+      camRect: {left: 0, top: 0, width: 0, height: 0},
       videoWidth: undefined,
       videoHeight: undefined
     }
@@ -199,6 +199,14 @@ class Camera extends Component {
     // The camera_frame tightly fits the camera preview and is used to position elements 
     // on top of the camera preview (button and transparent image)
     console.log("Camera render", ++renderCount, "==========");
+    
+    const camRectStyle = {
+        left: this.state.camRect.left + 'px',
+        top: this.state.camRect.top + 'px',
+        width: this.state.camRect.width + 'px',
+        height: this.state.camRect.height + 'px'
+    };
+    
     if (this.state.hascamera) {
       return (
         <div className="cameracontainer">
@@ -210,8 +218,8 @@ class Camera extends Component {
           <canvas className="canvas" width={this.state.videoWidth} height={this.state.videoHeight} ref={this.canvasRef}/>
           <div className="camera_bar" ref={this.afterRef}></div>
           <IconButton icon={faClose} className="closebutton" onClick={this.cameraCancelled.bind(this)} />          
-          <PhotoView rect={this.state.camRect} visible={this.state.photoVisible} photodata={this.photoData} onaccept={this.photoAccepted.bind(this)} oncancel={this.photoCancelled.bind(this)}/>
-          <OverlayView rect={this.state.camRect} src={this.props.overlayURL} opacity={this.opacity} />
+          <PhotoView style={camRectStyle} visible={this.state.photoVisible} photodata={this.photoData} onaccept={this.photoAccepted.bind(this)} oncancel={this.photoCancelled.bind(this)}/>
+          <OverlayView style={camRectStyle} src={this.props.overlayURL} opacity={this.opacity} />
           <IconButton icon={faOpacity} className="opacitybutton" onClick={this.photoCancelled.bind(this)} />
         </div>
       );

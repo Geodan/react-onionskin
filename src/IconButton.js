@@ -4,13 +4,6 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 
 
 class IconButton extends Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      left: props.left,
-      top: props.top
-    }
-  }
   render() {
     return (
       <div className={"iconbutton " + this.props.className} onClick={this.props.onClick}>

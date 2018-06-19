@@ -4,13 +4,6 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 
 
 class CenterButton extends Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      left: props.left,
-      top: props.top
-    }
-  }
   render() {
     return (
       <div className="centerbutton" onClick={this.props.onClick}>
