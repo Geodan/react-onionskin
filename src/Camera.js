@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import './Camera.css';
-import CenterButton from './CenterButton';
 import IconButton from './IconButton';
 import faCamera from '@fortawesome/fontawesome-free-solid/faCamera';
 import faClose from '@fortawesome/fontawesome-free-solid/faTimes';
 import faOpacity from './iconOpacity.json';
-import PhotoView from './PhotoView';
 import OverlayView from './OverlayView';
+import faCheckSquare from '@fortawesome/fontawesome-free-solid/faCheckSquare';
+import faArrowLeft from '@fortawesome/fontawesome-free-solid/faArrowLeft';
 import 'webrtc-adapter';
 
 const fitRectangleToDisplay = function(rectangleAspect, displayWidth, displayHeight, fitInside, rectBefore, rectAfter)
@@ -77,7 +77,9 @@ class Camera extends Component {
       hascamera: true,
       camRect: {left: 0, top: 0, width: 0, height: 0},
       videoWidth: undefined,
-      videoHeight: undefined
+      videoHeight: undefined,
+      photoVisible: false,
+      overlayOpacity: 0.5
     }
   }
   componentDidMount()
@@ -213,13 +215,15 @@ class Camera extends Component {
           <div className="camera_bar" ref={this.beforeRef}></div>
           <div className="camera_frame" ref={this.camFrameRef}>
           <video autoPlay className="video" id={this.props.id} ref={this.videoRef}></video>
-          <CenterButton onClick={()=> this.takePhoto()} icon={faCamera}/>          
           </div>
           <canvas className="canvas" width={this.state.videoWidth} height={this.state.videoHeight} ref={this.canvasRef}/>
           <div className="camera_bar" ref={this.afterRef}></div>
-          <IconButton icon={faClose} className="closebutton" onClick={this.cameraCancelled.bind(this)} />          
-          <PhotoView style={camRectStyle} visible={this.state.photoVisible} photodata={this.photoData} onaccept={this.photoAccepted.bind(this)} oncancel={this.photoCancelled.bind(this)}/>
-          <OverlayView style={camRectStyle} src={this.props.overlayURL} opacity={this.opacity} />
+          <OverlayView style={camRectStyle} visible={this.state.photoVisible} src={this.photoData}/>
+          <OverlayView style={camRectStyle} src={this.props.overlayURL} opacity={this.state.overlayOpacity} />
+          <IconButton className="centerbutton" onClick={this.takePhoto.bind(this)} icon={faCamera} visible={!this.state.photoVisible}/>
+          <IconButton className="centerbutton" onClick={this.photoAccepted.bind(this)} icon={faCheckSquare} visible={this.state.photoVisible}/>
+          <IconButton icon={faClose} className="closebutton" onClick={this.cameraCancelled.bind(this)} visible={!this.state.photoVisible}/>
+          <IconButton onClick={this.photoCancelled.bind(this)} className="backbutton" icon={faArrowLeft} visible={this.state.photoVisible}/>
           <IconButton icon={faOpacity} className="opacitybutton" onClick={this.photoCancelled.bind(this)} />
         </div>
       );

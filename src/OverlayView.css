@@ -1,10 +1,8 @@
 .overlayviewframe {
   position: absolute;
   background: transparent;
-  pointer-events: none;
 }
 .overlayviewframe img {
   width: 100%;
   height: auto;
-  opacity: 0.5;
 }

@@ -3,9 +3,13 @@ import './OverlayView.css';
 
 class OverlayView extends Component {
   render() {
-    if (this.props.src) {
+    let myStyle = this.props.style ? Object.assign({}, this.props.style) : {};
+    if (this.props.opacity) {
+      myStyle = Object.assign(myStyle, {opacity: this.props.opacity});
+    }
+    if ((this.props.visible === undefined || this.props.visible) && this.props.src) {
       return (
-          <div className="overlayviewframe" style={this.props.style}>
+          <div className="overlayviewframe" style={myStyle}>
             <img src={this.props.src} alt="overlay" />                        
           </div>          
       );
