@@ -62,8 +62,11 @@ const setElementStyleToRect = function(element, rect) {
   element.style.height = rect.height + 'px';
 };
 
+let renderCount = 0;
+
 class Camera extends Component {
   constructor (props) {
+    console.log("constructor");
     super(props);
     this.camFrameRef = React.createRef();
     this.beforeRef = React.createRef();
@@ -79,17 +82,21 @@ class Camera extends Component {
   }
   componentDidMount()
   {
+    console.log("componentDidMount");
     window.addEventListener("resize", this.updateDimensions.bind(this));
-    if (this.state.hascamera) {
-      this.setMediaStream();
-    }
+    this.updateDimensions();
   }
   compontentWillUnmount()
   {
+    console.log("componentWillUnmount");
     window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
-  fitToParentContainer()
+  updateDimensions()
   {
+    console.log("updateDimensions");
+    if (!this.camFrameRef.current) {
+      return;
+    }
     const parentContainer = this.camFrameRef.current.parentNode;
     const containerWidth = parentContainer.clientWidth;
     const containerHeight = parentContainer.clientHeight;
@@ -103,14 +110,9 @@ class Camera extends Component {
       this.setState(Object.assign(this.state, {camRect: camRect}));
     }
   }
-  updateDimensions()
-  {
-    if (this.state.videoWidth && this.state.videoHeight) {
-      this.fitToParentContainer();
-    }
-  }
   componentDidUpdate()
   {
+    console.log("componentDidUpate");
     this.updateDimensions();
     if (this.state.hascamera) {
       this.setMediaStream();
@@ -118,6 +120,13 @@ class Camera extends Component {
   }
   setMediaStream()
   {
+    console.log("setMediaStream");
+    if (this.state.photoVisible) {
+      return; // preview photo in front, no need to activate cam
+    }
+    if (this.videoRef.current.srcObject) {
+      return; // already set
+    }
     const self = this;
     navigator.mediaDevices.enumerateDevices()
     .then(function(devices){
@@ -150,33 +159,33 @@ class Camera extends Component {
     const context = this.canvasRef.current.getContext('2d');
     context.drawImage(this.videoRef.current, 0, 0, this.state.videoWidth, this.state.videoHeight);
     this.photoData = this.canvasRef.current.toDataURL('image/jpeg');
-    this.setState(Object.assign(this.state, {photoVisible: true}));
     // turn off video
-    const self = this;
-    setTimeout(function() {
-      if (self.videoRef.current) {
-        let stream = self.videoRef.current.srcObject;
-        let tracks = stream.getTracks();
-        tracks.forEach(track=>track.stop());
-        self.videoRef.current.srcObject = null;
-      }
-    }, 500);
+    this.closeMediaStream();
+    this.setState(Object.assign(this.state, {photoVisible: true}));
     console.log("picture taken!", this.photoData.length);
   }
   photoAccepted()
   {
+    this.closeMediaStream();
     this.setState(Object.assign(this.state, {photoVisible: false}));
     this.props.getphoto(this.photoData);
   }
-  cameraCancelled()
+  closeMediaStream()
   {
-    // user clicked close
-    if (this.videoRef.current) {
+    if (this.videoRef.current && this.videoRef.current.srcObject) {
+      console.log("stopping video");
       let stream = this.videoRef.current.srcObject;
+      console.log(stream.id, stream.active);
       let tracks = stream.getTracks();
       tracks.forEach(track=>track.stop());
       this.videoRef.current.srcObject = null;
     }
+  }
+  cameraCancelled()
+  {
+    // user clicked close
+    console.log("cameraCancelled");
+    this.closeMediaStream();
     this.setState(Object.assign(this.state, {photoVisible: false}));
     this.photoData = null;
     this.props.getphoto(null);
@@ -193,6 +202,7 @@ class Camera extends Component {
     // Therefore using camera_bars to blacken screen parts not covered by the camera preview
     // The camera_frame tightly fits the camera preview and is used to position elements 
     // on top of the camera preview (button and transparent image)
+    console.log("Camera render", ++renderCount, "==========");
     if (this.state.hascamera) {
       return (
         <div className="cameracontainer">
