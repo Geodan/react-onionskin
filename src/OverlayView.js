@@ -9,7 +9,7 @@ class OverlayView extends Component {
     }
     if ((this.props.visible === undefined || this.props.visible) && this.props.src) {
       return (
-          <div className={"overlayviewframe " + this.props.className} style={myStyle}>
+          <div className={"overlayviewframe " + (this.props.className ? this.props.className : "")} style={myStyle}>
             <img src={this.props.src} alt="overlay" />                        
           </div>          
       );

@@ -76,13 +76,14 @@ class Camera extends Component {
     this.afterRef = React.createRef();
     this.videoRef = React.createRef();
     this.canvasRef = React.createRef();
+    this.opacityInfoRef = React.createRef();
     this.state = {
       hascamera: true,
       camRect: {left: 0, top: 0, width: 0, height: 0},
       videoWidth: undefined,
       videoHeight: undefined,
       photoVisible: false,
-      overlayOpacity: 0.5
+      overlayOpacity: 50
     }
   }
   componentDidMount()
@@ -200,20 +201,24 @@ class Camera extends Component {
   }
   opacityUp() 
   { 
-    if (Math.round(this.state.overlayOpacity * 100) < 100) {
-      this.setState(Object.assign(this.state, {overlayOpacity: this.state.overlayOpacity + 0.1}));
-      setTimeout(function(){
-        document.getElementById("opacityinfo").classList.add("opacityanimation");
-      }, 100);
+    if (this.state.overlayOpacity < 100) {
+      this.setState(Object.assign(this.state, {overlayOpacity: this.state.overlayOpacity + 10}));
+      setTimeout(function(){        
+        if (this.opacityInfoRef && this.opacityInfoRef.current) {
+          this.opacityInfoRef.current.classList.add("opacityanimation");
+        }
+      }.bind(this), 100);
     }
   }
   opacityDown()
   {
-    if (Math.round(this.state.overlayOpacity * 100) > 0) {
-      this.setState(Object.assign(this.state, {overlayOpacity: this.state.overlayOpacity - 0.1}));
+    if (this.state.overlayOpacity > 0) {
+      this.setState(Object.assign(this.state, {overlayOpacity: this.state.overlayOpacity - 10}));      
       setTimeout(function(){
-        document.getElementById("opacityinfo").classList.add("opacityanimation");
-      }, 100);
+        if (this.opacityInfoRef && this.opacityInfoRef.current) {
+          this.opacityInfoRef.current.classList.add("opacityanimation");
+        }
+      }.bind(this), 100);
     }
   }
   render() {
@@ -241,7 +246,7 @@ class Camera extends Component {
           <canvas className="canvas" width={this.state.videoWidth} height={this.state.videoHeight} ref={this.canvasRef}/>
           <div className="camera_bar" ref={this.afterRef}></div>
           <OverlayView className="photoview" style={camRectStyle} visible={this.state.photoVisible} src={this.photoData}/>
-          <OverlayView style={camRectStyle} src={this.props.overlayURL} opacity={this.state.overlayOpacity} />
+          <OverlayView style={camRectStyle} src={this.props.overlayURL} opacity={this.state.overlayOpacity/100} />
           <IconButton className="centerbutton" onClick={this.takePhoto.bind(this)} icon={faCamera} visible={!this.state.photoVisible}/>
           <IconButton className="centerbutton" onClick={this.photoAccepted.bind(this)} icon={faCheckSquare} visible={this.state.photoVisible}/>
           <IconButton icon={faClose} className="closebutton" onClick={this.cameraCancelled.bind(this)} visible={!this.state.photoVisible}/>
@@ -252,7 +257,7 @@ class Camera extends Component {
           <FontAwesomeIcon icon={faOpacity} className="opacityicon"/>
           &nbsp;
           <IconButton icon={faPlus} className="opacitybutton" onClick={this.opacityUp.bind(this)} />
-          <div id="opacityinfo" className={"opacityinfo a" + Math.round(this.state.overlayOpacity*100)}>{Math.round(this.state.overlayOpacity * 100) + "%"}</div>
+          <div className={"opacityinfo a" + this.state.overlayOpacity} ref={this.opacityInfoRef}>{this.state.overlayOpacity + "%"}</div>
           </div>}
         </div>
       );
