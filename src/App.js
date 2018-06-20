@@ -21,7 +21,6 @@ class App extends Component {
     this.setState(Object.assign(this.state, photoData ? {photo: photoData, overlay: photoData, camVisible: false} : {camVisible: false}));
   }
   render() {
-    console.log("App render");
     if (this.state.camVisible) {
       return (<Camera channel="0" getphoto={this.photoResult.bind(this)} overlayURL={this.state.overlay}/>);
     } else {

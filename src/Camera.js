@@ -65,11 +65,8 @@ const setElementStyleToRect = function(element, rect) {
   element.style.height = rect.height + 'px';
 };
 
-let renderCount = 0;
-
 class Camera extends Component {
   constructor (props) {
-    console.log("constructor");
     super(props);
     this.camFrameRef = React.createRef();
     this.beforeRef = React.createRef();
@@ -88,18 +85,15 @@ class Camera extends Component {
   }
   componentDidMount()
   {
-    console.log("componentDidMount");
     window.addEventListener("resize", this.updateDimensions.bind(this));
     this.updateDimensions();
   }
   compontentWillUnmount()
   {
-    console.log("componentWillUnmount");
     window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
   updateDimensions()
   {
-    console.log("updateDimensions");
     if (!this.camFrameRef.current) {
       return;
     }
@@ -118,13 +112,11 @@ class Camera extends Component {
   }
   componentDidUpdate()
   {
-    console.log("componentDidUpate");
     this.updateDimensions();
     this.setMediaStream();
   }
   setMediaStream()
   {
-    console.log("setMediaStream");
     if (this.state.photoVisible) {
       return; // preview photo in front, no need to activate cam
     }
@@ -165,7 +157,6 @@ class Camera extends Component {
     this.closeMediaStream();
     this.prevOverlayOpacity = this.state.overlayOpacity;
     this.setState(Object.assign(this.state, {photoVisible: true, overlayOpacity: 0}));
-    console.log("picture taken!", this.photoData.length);
   }
   photoAccepted()
   {
@@ -182,9 +173,8 @@ class Camera extends Component {
   closeMediaStream()
   {
     if (this.videoRef.current && this.videoRef.current.srcObject) {
-      console.log("stopping video");
       let stream = this.videoRef.current.srcObject;
-      console.log(stream.id, stream.active);
+      //console.log(stream.id, stream.active);
       let tracks = stream.getTracks();
       tracks.forEach(track=>track.stop());
       this.videoRef.current.srcObject = null;
@@ -193,7 +183,6 @@ class Camera extends Component {
   cameraCancelled()
   {
     // user clicked close
-    console.log("cameraCancelled");
     this.closeMediaStream();
     this.setState(Object.assign(this.state, {photoVisible: false}));
     this.photoData = null;
@@ -227,7 +216,6 @@ class Camera extends Component {
     // Therefore using camera_bars to blacken screen parts not covered by the camera preview
     // The camera_frame tightly fits the camera preview and is used to position elements 
     // on top of the camera preview (button and transparent image)
-    console.log("Camera render", ++renderCount, "==========");
     
     const camRectStyle = {
         left: this.state.camRect.left + 'px',
