@@ -193,9 +193,7 @@ class Camera extends Component {
     if (this.state.overlayOpacity < 100) {
       this.setState(Object.assign(this.state, {overlayOpacity: this.state.overlayOpacity + 10}));
       setTimeout(function(){        
-        if (this.opacityInfoRef && this.opacityInfoRef.current) {
           this.opacityInfoRef.current.classList.add("opacityanimation");
-        }
       }.bind(this), 100);
     }
   }
@@ -204,9 +202,7 @@ class Camera extends Component {
     if (this.state.overlayOpacity > 0) {
       this.setState(Object.assign(this.state, {overlayOpacity: this.state.overlayOpacity - 10}));      
       setTimeout(function(){
-        if (this.opacityInfoRef && this.opacityInfoRef.current) {
-          this.opacityInfoRef.current.classList.add("opacityanimation");
-        }
+        this.opacityInfoRef.current.classList.add("opacityanimation");
       }.bind(this), 100);
     }
   }
@@ -218,11 +214,15 @@ class Camera extends Component {
     // on top of the camera preview (button and transparent image)
     
     const camRectStyle = {
-        left: this.state.camRect.left + 'px',
-        top: this.state.camRect.top + 'px',
-        width: this.state.camRect.width + 'px',
-        height: this.state.camRect.height + 'px'
+      left: this.state.camRect.left + 'px',
+      top: this.state.camRect.top + 'px',
+      width: this.state.camRect.width + 'px',
+      height: this.state.camRect.height + 'px'
     };
+
+    const buttonStyle = {
+      top: Math.round(this.state.camRect.top + (this.state.camRect.height - 40) * 0.8) + 'px'
+    }
     
     if (this.state.hascamera) {
       return (
@@ -235,8 +235,8 @@ class Camera extends Component {
           <div className="camera_bar" ref={this.afterRef}></div>
           <OverlayView className="photoview" style={camRectStyle} visible={this.state.photoVisible} src={this.photoData}/>
           <OverlayView style={camRectStyle} src={this.props.overlayURL} opacity={this.state.overlayOpacity/100} />
-          <IconButton className="centerbutton" onClick={this.takePhoto.bind(this)} icon={faCamera} visible={!this.state.photoVisible}/>
-          <IconButton className="centerbutton" onClick={this.photoAccepted.bind(this)} icon={faCheckSquare} visible={this.state.photoVisible}/>
+          <IconButton style={buttonStyle} className="centerbutton" onClick={this.takePhoto.bind(this)} icon={faCamera} visible={!this.state.photoVisible}/>
+          <IconButton style={buttonStyle} className="centerbutton" onClick={this.photoAccepted.bind(this)} icon={faCheckSquare} visible={this.state.photoVisible}/>
           <IconButton icon={faClose} className="closebutton" onClick={this.cameraCancelled.bind(this)} visible={!this.state.photoVisible}/>
           <IconButton onClick={this.photoCancelled.bind(this)} className="backbutton" icon={faArrowLeft} visible={this.state.photoVisible}/>
           {this.props.overlayURL && <div className="opacitybar">
