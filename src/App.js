@@ -22,7 +22,7 @@ class App extends Component {
   }
   render() {
     if (this.state.camVisible) {
-      return (<Camera camnumber="0" getphoto={this.photoResult.bind(this)} overlayURL={this.state.overlay}/>);
+      return (<Camera camnumber="1" getphoto={this.photoResult.bind(this)} overlayURL={this.state.overlay}/>);
     } else {
       return (
         <div className="App">

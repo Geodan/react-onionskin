@@ -77,11 +77,22 @@ class Camera extends Component {
     this.state = {
       hascamera: true,
       camRect: {left: 0, top: 0, width: 0, height: -40},
-      videoWidth: undefined,
-      videoHeight: undefined,
+      videoWidth: 640,
+      videoHeight: 480,
       photoVisible: false,
       overlayOpacity: 50
-    }
+    };
+    this.resolutions = [
+      2304, /* 2304 x 1728, 3.9 Mpixel */
+      2048, /* 2048 x 1536, QXGA, 3.1 Mpixel */
+      1920, /* 1920 x 1440, 2.7 Mpixel */
+      1600, /* 1600 x 1200, UXGA, 1.9 Mpixel */
+      1440, /* 1440 x 1080, HD, 1.5 Mpixel */
+      1280, /* 1280 x 960, SXGA, 1.2 Mpixel */
+      1024, /* 1024 x 768, XGA,  0.78 Mpixel */
+      800,  /* 800 x 600, SVGA, 0.48 Mpixel */
+      600  /* 640 x 480, VGA, 0.3 Mpixel */
+    ];
   }
   componentDidMount()
   {
@@ -113,7 +124,12 @@ class Camera extends Component {
   componentDidUpdate()
   {
     this.updateDimensions();
+    this.resolutionCount = 0;
     this.setMediaStream();
+  }
+  getStreamForResolution(deviceId, width, height) 
+  {
+    return navigator.mediaDevices.getUserMedia({audio: false, video: { deviceId: deviceId, width: width, height: height}});
   }
   setMediaStream()
   {
@@ -131,8 +147,22 @@ class Camera extends Component {
     .then(function(devices){
       const videodevices = devices.filter(device=>device.kind==='videoinput');
       if (videodevices.length) {
-        const camnumber = self.props.camnumber ? self.props.camnumber % videodevices.length: 0;
-        navigator.mediaDevices.getUserMedia({audo: false, video: { deviceId: videodevices[camnumber].deviceId }})
+        const deviceId = videodevices[self.props.camnumber ? self.props.camnumber % videodevices.length : 0].deviceId;
+        let width = self.resolutions[self.resolutionCount % self.resolutions.length];
+        let height = (width/4) * 3;
+        /*if (window.screen.width < window.screen.height) {
+          // screen is portrait
+          const tmp = width;
+          width = height;
+          height = tmp;
+        }*/
+        if (self.resolutionCount > self.resolutions.length) {
+          // try other aspect
+          const tmp = width;
+          width = height;
+          height = tmp;
+        }
+        navigator.mediaDevices.getUserMedia({audio: false, video: { deviceId: deviceId, width: {exact: width}, height: {exact: height} }})
         .then(function(stream){
           self.videoRef.current.srcObject = stream;
           self.videoRef.current.onloadedmetadata = function() {
@@ -145,6 +175,10 @@ class Camera extends Component {
           }
         }).catch(function(error) {
           console.log(error);
+          self.resolutionCount++;
+          if (self.resolutionCount < self.resolutions.length * 2) {
+            self.setMediaStream();
+          } 
         });
       } else {
         self.setState(Object.assign(self.state, {hascamera: false}));
