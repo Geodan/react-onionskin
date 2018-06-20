@@ -76,7 +76,7 @@ class Camera extends Component {
     this.opacityInfoRef = React.createRef();
     this.state = {
       hascamera: true,
-      camRect: {left: 0, top: 0, width: 0, height: 0},
+      camRect: {left: 0, top: 0, width: 0, height: -40},
       videoWidth: undefined,
       videoHeight: undefined,
       photoVisible: false,
