@@ -10,7 +10,7 @@
   right: 0;
   margin: auto;
   user-select: none;
-  border: 2px solid black;
+  overflow: hidden;
 }
 
 .cameracontainer {

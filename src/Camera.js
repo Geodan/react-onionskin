@@ -100,7 +100,7 @@ class Camera extends Component {
     const parentContainer = this.camFrameRef.current.parentNode;
     const containerWidth = parentContainer.clientWidth;
     const containerHeight = parentContainer.clientHeight;
-    const cameraAspectRatio = 4/3;
+    const cameraAspectRatio = this.state.videoWidth / this.state.videoHeight;
     const rectBefore = {}, rectAfter = {};
     const camRect = fitRectangleToDisplay(cameraAspectRatio, containerWidth, containerHeight, true, rectBefore, rectAfter);
     setElementStyleToRect(this.camFrameRef.current, camRect);
@@ -139,6 +139,9 @@ class Camera extends Component {
             if (this.videoWidth !== self.state.videoWidth || this.videoHeight !== self.state.videoHeight) {
               self.setState(Object.assign(self.state, {videoWidth: this.videoWidth, videoHeight: this.videoHeight}));
             }
+          }
+          self.videoRef.current.onresize = function() {
+            self.setState(Object.assign(self.state, {videoWidth: this.videoWidth, videoHeight: this.videoHeight}));
           }
         }).catch(function(error) {
           console.log(error);
