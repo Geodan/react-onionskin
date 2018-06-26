@@ -88,10 +88,10 @@ class Camera extends Component {
       1920, /* 1920 x 1440, 2.7 Mpixel */
       1600, /* 1600 x 1200, UXGA, 1.9 Mpixel */
       1440, /* 1440 x 1080, HD, 1.5 Mpixel */
-      1280, /* 1280 x 960, SXGA, 1.2 Mpixel */
-      1024, /* 1024 x 768, XGA,  0.78 Mpixel */
-      800,  /* 800 x 600, SVGA, 0.48 Mpixel */
-      600  /* 640 x 480, VGA, 0.3 Mpixel */
+      1280, /* 1280 x  960, SXGA, 1.2 Mpixel */
+      1024, /* 1024 x  768, XGA,  0.78 Mpixel */
+       800, /*  800 x  600, SVGA, 0.48 Mpixel */
+       640  /*  640 x  480, VGA, 0.3 Mpixel */
     ];
   }
   componentDidMount()
@@ -144,10 +144,13 @@ class Camera extends Component {
     }
     const self = this;
     navigator.mediaDevices.enumerateDevices()
+    .catch(function(err) {
+      console.log(err);
+    })
     .then(function(devices){
       const videodevices = devices.filter(device=>device.kind==='videoinput');
       if (videodevices.length) {
-        const deviceId = videodevices[self.props.camnumber ? self.props.camnumber % videodevices.length : 0].deviceId;
+        //const deviceId = videodevices[self.props.camnumber ? self.props.camnumber % videodevices.length : 0].deviceId;
         let width = self.resolutions[self.resolutionCount % self.resolutions.length];
         let height = (width/4) * 3;
         if (self.resolutionCount > self.resolutions.length) {
@@ -156,13 +159,14 @@ class Camera extends Component {
           width = height;
           height = tmp;
         }
-        navigator.mediaDevices.getUserMedia({audio: false, video: { deviceId: deviceId, width: {exact: width}, height: {exact: height} }})
+        navigator.mediaDevices.getUserMedia({audio: false, video: { facingMode: "environment", width: {exact: width}, height: {exact: height} }})
         .then(function(stream){
           self.videoRef.current.srcObject = stream;
           self.videoRef.current.onloadedmetadata = function() {
             if (this.videoWidth !== self.state.videoWidth || this.videoHeight !== self.state.videoHeight) {
               self.setState(Object.assign(self.state, {videoWidth: this.videoWidth, videoHeight: this.videoHeight}));
             }
+            self.videoRef.current.style.visibility = "visible";
           }
           self.videoRef.current.onresize = function() {
             self.setState(Object.assign(self.state, {videoWidth: this.videoWidth, videoHeight: this.videoHeight}));
@@ -184,6 +188,7 @@ class Camera extends Component {
   }
   takePhoto() 
   {
+    this.videoRef.current.style.visibility = "hidden";
     const context = this.canvasRef.current.getContext('2d');
     context.drawImage(this.videoRef.current, 0, 0, this.state.videoWidth, this.state.videoHeight);
     this.photoData = this.canvasRef.current.toDataURL('image/jpeg');
@@ -226,7 +231,7 @@ class Camera extends Component {
   { 
     if (this.state.overlayOpacity < 100) {
       this.setState(Object.assign(this.state, {overlayOpacity: this.state.overlayOpacity + 10}));
-      setTimeout(function(){        
+      setTimeout(function(){
           this.opacityInfoRef.current.classList.add("opacityanimation");
       }.bind(this), 100);
     }

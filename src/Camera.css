@@ -29,6 +29,7 @@
 }
 
 .video {
+  visibility: hidden;
   width: 100%;
   height: auto;
 }
