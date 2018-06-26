@@ -150,14 +150,8 @@ class Camera extends Component {
         const deviceId = videodevices[self.props.camnumber ? self.props.camnumber % videodevices.length : 0].deviceId;
         let width = self.resolutions[self.resolutionCount % self.resolutions.length];
         let height = (width/4) * 3;
-        /*if (window.screen.width < window.screen.height) {
-          // screen is portrait
-          const tmp = width;
-          width = height;
-          height = tmp;
-        }*/
         if (self.resolutionCount > self.resolutions.length) {
-          // try other aspect
+          // try inverse aspect ratios
           const tmp = width;
           width = height;
           height = tmp;
@@ -174,11 +168,14 @@ class Camera extends Component {
             self.setState(Object.assign(self.state, {videoWidth: this.videoWidth, videoHeight: this.videoHeight}));
           }
         }).catch(function(error) {
-          console.log(error);
           self.resolutionCount++;
           if (self.resolutionCount < self.resolutions.length * 2) {
             self.setMediaStream();
-          } 
+          } else {
+            // reset resolutionCount for next try, maybe camera used by other process?
+            self.resolutionCount = 0;
+            console.log(error);
+          }
         });
       } else {
         self.setState(Object.assign(self.state, {hascamera: false}));
